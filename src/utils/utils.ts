@@ -18,7 +18,7 @@ export async function getRelevantTweetsAndSend() {
     return
   }
 
-  console.log(tweetsToSend)
+  console.log(`Found ${tweetsToSend.length} new tweets to send`)
 
   const results = await Promise.allSettled(
     tweetsToSend.map((tweet) => updateNotionTweetAndSend(tweet))

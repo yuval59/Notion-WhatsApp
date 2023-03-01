@@ -1,4 +1,4 @@
-//#region internalImports
+//#region imports
 //#region externalImports
 import {
   PageObjectResponse,
