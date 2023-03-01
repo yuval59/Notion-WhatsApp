@@ -5,7 +5,7 @@ import day from 'dayjs'
 //#endregion
 
 //#region internalImports
-import { Tweet } from '../types/types'
+import { internalServiceError, Tweet } from '../types/types'
 import {
   NotionPageObjectResponse,
   NotionQueryDatabaseParameters,
@@ -57,8 +57,21 @@ export async function getUnsentScheduledTweets(): Promise<Tweet[]> {
   return mapNotionTweets(await getTweetsWithFilter(notionTweetFilter))
 }
 
-export async function setTweetDelivered(notionId: string, delivered: boolean) {
-  return new Promise((resolve, reject) =>
-    setTimeout(() => reject('Not implemented'), 1000)
-  )
+export async function setTweetDelivered(notionId: string, Delivered: boolean) {
+  try {
+    await client.pages.update({
+      page_id: notionId,
+      properties: {
+        Delivered,
+      },
+    })
+  } catch (err) {
+    const errorObject: internalServiceError = {
+      notionId,
+      err,
+      message: `Failed to set delivered status of tweet ${notionId}`,
+    }
+
+    throw errorObject
+  }
 }
