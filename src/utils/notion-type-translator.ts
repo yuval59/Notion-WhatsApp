@@ -47,6 +47,7 @@ export function mapNotionTweets(results: PageObjectResponse[]) {
       fullMessage,
     }
   }
+  //#endregion
 
   return (results as unknown as NotionTweet[]).map(
     (notionTweet: NotionTweet): Tweet => makeTweet(notionTweet)
