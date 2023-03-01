@@ -56,6 +56,10 @@ async function attemptToSendTweet(tweetToSend: Tweet) {
   try {
     await sendTweet(tweetToSend)
   } catch (err) {
+    try {
+      await updateNotionTweetDelivered(tweetToSend.notionId, false)
+    } catch (err) {}
+
     const rejectionObject: internalServiceError = {
       notionId: tweetToSend.notionId,
       message: `Error while sending tweet ${tweetToSend.notionId}`,
