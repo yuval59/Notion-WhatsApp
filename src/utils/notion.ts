@@ -32,6 +32,10 @@ export async function getTweetsWithFilter(
   return (await client.databases.query(notionQuery)).results.filter((result) =>
     isFullPage(result)
   ) as NotionPageObjectResponse[] as any as NotionTweet[]
+  // Step by step
+  // Query the database, get everything
+  // Filter with provided typeguard to leave only full pages (NotionPageObjectResponse)
+  // Cast to internal NotionTweet type, have to go through any or unknown first
 }
 
 export async function getUnsentScheduledTweets(): Promise<Tweet[]> {
