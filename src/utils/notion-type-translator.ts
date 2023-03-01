@@ -5,11 +5,9 @@ import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
 
 //#region internalImports
 import {
-  NotionDelivered,
   NotionHashtag,
   NotionHashtagMultiSelect,
   NotionMessage,
-  NotionPostDate,
   NotionTweet,
 } from '../types/notion-types'
 import { Tweet } from '../types/types'
