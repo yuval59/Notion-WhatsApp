@@ -1,0 +1,33 @@
+{
+  "name": "twitter-poc",
+  "version": "1.0.0",
+  "description": "Proof of conecpt, learning Notion API and Serverless technologies ",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuval59/twitter-poc.git"
+  },
+  "keywords": [
+    "Notion",
+    "Typescript",
+    "Twitter"
+  ],
+  "author": "Yuval Maron",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yuval59/twitter-poc/issues"
+  },
+  "homepage": "https://github.com/yuval59/twitter-poc#readme",
+  "dependencies": {
+    "@notionhq/client": "^2.2.3",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
