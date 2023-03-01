@@ -1,5 +1,9 @@
+//#region imports
+//#region externalImports
 import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
+//#endregion
 
+//#region internalImports
 import {
   NotionDelivered,
   NotionHashtag,
@@ -9,9 +13,13 @@ import {
   NotionTweet,
 } from '../types/notion-types'
 import { Tweet } from '../types/types'
+//#endregion
+//#endregion
 
 export function mapNotionTweets(results: PageObjectResponse[]) {
+  //#region internalFunctions - layer 1
   function makeTweet(originalTweet: NotionTweet): Tweet {
+    //#region internalFunctions - layer 2
     function makeHashtags(originalHashtags: NotionHashtag) {
       return originalHashtags.multi_select.map(
         (selector: NotionHashtagMultiSelect) => selector.name
@@ -22,6 +30,7 @@ export function mapNotionTweets(results: PageObjectResponse[]) {
         ? originalMessage.title[0].plain_text
         : ''
     }
+    //#endregion
 
     const { id: notionId, properties } = originalTweet
 
