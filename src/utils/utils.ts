@@ -28,33 +28,40 @@ export async function getRelevantTweetsAndSend() {
 }
 
 async function updateNotionTweetAndSend(tweetToSend: Tweet): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    const { notionId } = tweetToSend
+  const { notionId } = tweetToSend
 
-    try {
-      await setTweetDelivered(notionId, true)
-    } catch (err) {
-      const rejectionObject: internalServiceError = {
-        notionId,
-        message: `Error while updating notion tweet ${notionId}`,
-        err,
-      }
+  await updateNotionTweetDelivered(notionId, true)
 
-      reject(rejectionObject)
+  await attemptToSendTweet(tweetToSend)
+}
+
+async function updateNotionTweetDelivered(
+  notionId: string,
+  delivered: boolean
+) {
+  try {
+    await setTweetDelivered(notionId, delivered)
+  } catch (err) {
+    const rejectionObject: internalServiceError = {
+      notionId,
+      message: `Error while updating notion tweet ${notionId}`,
+      err,
     }
 
-    try {
-      await sendTweet(tweetToSend)
-    } catch (err) {
-      const rejectionObject: internalServiceError = {
-        notionId,
-        message: `Error while sending tweet ${notionId}`,
-        err,
-      }
+    throw rejectionObject
+  }
+}
 
-      reject(rejectionObject)
+async function attemptToSendTweet(tweetToSend: Tweet) {
+  try {
+    await sendTweet(tweetToSend)
+  } catch (err) {
+    const rejectionObject: internalServiceError = {
+      notionId: tweetToSend.notionId,
+      message: `Error while sending tweet ${tweetToSend.notionId}`,
+      err,
     }
 
-    resolve()
-  })
+    throw rejectionObject
+  }
 }
