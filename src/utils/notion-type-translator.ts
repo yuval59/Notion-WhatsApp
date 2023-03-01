@@ -1,8 +1,4 @@
 //#region imports
-//#region externalImports
-import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
-//#endregion
-
 //#region internalImports
 import {
   NotionHashtag,
@@ -14,7 +10,7 @@ import { Tweet } from '../types/types'
 //#endregion
 //#endregion
 
-export function mapNotionTweets(results: PageObjectResponse[]) {
+export function mapNotionTweets(results: NotionTweet[]) {
   //#region internalFunctions - layer 1
   function makeTweet(originalTweet: NotionTweet): Tweet {
     //#region internalFunctions - layer 2
@@ -49,7 +45,7 @@ export function mapNotionTweets(results: PageObjectResponse[]) {
   }
   //#endregion
 
-  return (results as unknown as NotionTweet[]).map(
+  return results.map(
     (notionTweet: NotionTweet): Tweet => makeTweet(notionTweet)
   )
 }

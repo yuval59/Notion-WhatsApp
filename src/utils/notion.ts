@@ -10,6 +10,7 @@ import {
   NotionPageObjectResponse,
   NotionQueryDatabaseParameters,
   NotionQueryFilter,
+  NotionTweet,
 } from '../types/notion-types'
 import { mapNotionTweets } from './notion-type-translator'
 //#endregion
@@ -21,7 +22,7 @@ const client = new Client({
 
 export async function getTweetsWithFilter(
   filter: NotionQueryFilter
-): Promise<NotionPageObjectResponse[]> {
+): Promise<NotionTweet[]> {
   const notionQuery: NotionQueryDatabaseParameters = {
     database_id: `${process.env.NOTION_DB}`,
   }
@@ -30,7 +31,7 @@ export async function getTweetsWithFilter(
 
   return (await client.databases.query(notionQuery)).results.filter((result) =>
     isFullPage(result)
-  ) as NotionPageObjectResponse[]
+  ) as NotionPageObjectResponse[] as any as NotionTweet[]
 }
 
 export async function getUnsentScheduledTweets(): Promise<Tweet[]> {
