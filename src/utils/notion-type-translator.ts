@@ -1,51 +1,55 @@
 //#region imports
 //#region internalImports
 import {
-  NotionHashtag,
-  NotionHashtagMultiSelect,
   NotionMessage,
-  NotionTweet,
+  NotionContact,
+  NotionTitle,
 } from '../types/notion-types'
-import { Tweet } from '../types/types'
+import { Contact, Message } from '../types/types'
 //#endregion
 //#endregion
 
-export function mapNotionTweets(results: NotionTweet[]) {
+import fs from 'fs'
+
+export function mapNotionMessages(messages: NotionMessage[]): Message[] {
   //#region internalFunctions - layer 1
-  function makeTweet(originalTweet: NotionTweet): Tweet {
+  function makeMessageObject(notionMessage: NotionMessage): Message {
     //#region internalFunctions - layer 2
-    function makeHashtags(originalHashtags: NotionHashtag) {
-      return originalHashtags.multi_select.map(
-        (selector: NotionHashtagMultiSelect) => selector.name
-      )
-    }
-    function makeMessage(originalMessage: NotionMessage): string {
+    function makeMessageText(originalMessage: NotionTitle): string {
       return originalMessage.title.length
         ? originalMessage.title[0].plain_text
         : ''
     }
     //#endregion
 
-    const { id: notionId, properties } = originalTweet
+    const { id: notionId, properties } = notionMessage
 
     const delivered = properties.Delivered.checkbox
     const postDate = properties['Post Date'].date.start
-    const message = makeMessage(properties.Message)
-    const hashtags = makeHashtags(properties.Hashtags)
-    const fullMessage = [message, ...hashtags].join(' ')
+    const message = makeMessageText(properties.Message)
+    const contacts = properties.resolvedContacts.map(mapNotionContact)
 
     return {
       notionId,
       delivered,
-      hashtags,
       postDate,
       message,
-      fullMessage,
+      contacts,
     }
   }
   //#endregion
 
-  return results.map(
-    (notionTweet: NotionTweet): Tweet => makeTweet(notionTweet)
-  )
+  return messages.map(makeMessageObject)
+}
+
+function mapNotionContact(contact: NotionContact): Contact {
+  const { properties } = contact
+
+  fs.writeFileSync('./notion.json', JSON.stringify(properties, null, 2))
+
+  return {
+    contactName: properties.contactName.title[0].plain_text,
+    chatId: properties.chatId.rich_text[0].plain_text,
+    isGroup: properties.isGroup.checkbox,
+  }
 }

@@ -3,6 +3,7 @@
 import {
   PageObjectResponse,
   QueryDatabaseParameters,
+  GetPageParameters,
 } from '@notionhq/client/build/src/api-endpoints'
 //#endregion
 //#endregion
@@ -11,47 +12,68 @@ import {
 export type NotionPageObjectResponse = PageObjectResponse
 export type NotionQueryDatabaseParameters = QueryDatabaseParameters
 export type NotionQueryFilter = QueryDatabaseParameters['filter']
+export type NotionQueryPageParameters = GetPageParameters
 //#endregion
 
-//#region NotionTweet
-export type NotionTweet = {
-  id: string
-  properties: NotionProperties
+//#region NotionGeneral
+export type NotionInnerText = {
+  type: string
+  plain_text: string
 }
-
-export type NotionProperties = {
-  Hashtags: NotionHashtag
-  Delivered: NotionDelivered
-  'Post Date': NotionPostDate
-  Message: NotionMessage
-}
-export type NotionHashtag = {
+export type NotionTitle = {
   id: string
   type: string
-  multi_select: NotionHashtagMultiSelect[]
+  title: NotionInnerText[]
 }
-export type NotionHashtagMultiSelect = {
+export type NotionText = {
   id: string
-  name: string
-  color: string
+  type: string
+  rich_text: NotionInnerText[]
 }
-export type NotionDelivered = {
+export type NotionCheckbox = {
   id: string
   type: string
   checkbox: boolean
 }
-export type NotionPostDate = {
+export type NotionDate = {
   id: string
   type: string
   date: {
     start: string
+    end?: string
   }
 }
+export type NotionRelation = {
+  id: string
+  type: string
+  relation: { id: string }[]
+  has_more: boolean
+}
+//#endregion
+
+//#region NotionMessage
 export type NotionMessage = {
   id: string
-  title: NotionMessageTitle[]
+  properties: NotionMessageProperties
 }
-export type NotionMessageTitle = {
-  plain_text: string
+export type NotionMessageProperties = {
+  Delivered: NotionCheckbox
+  'Post Date': NotionDate
+  Message: NotionTitle
+  Contacts: NotionRelation
+  resolvedContacts?: NotionContact[]
+  Attachment: any
+}
+//#endregion
+
+//#region NotionContact
+export type NotionContact = {
+  id: string
+  properties: NotionContactProperties
+}
+export type NotionContactProperties = {
+  contactName: NotionTitle
+  chatId: NotionText
+  isGroup: NotionCheckbox
 }
 //#endregion

@@ -1,0 +1,53 @@
+{
+  "chatId": {
+    "id": "orys",
+    "type": "rich_text",
+    "rich_text": [
+      {
+        "type": "text",
+        "text": {
+          "content": "test",
+          "link": null
+        },
+        "annotations": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        },
+        "plain_text": "test",
+        "href": null
+      }
+    ]
+  },
+  "isGroup": {
+    "id": "%7BF%3CM",
+    "type": "checkbox",
+    "checkbox": false
+  },
+  "contactName": {
+    "id": "title",
+    "type": "title",
+    "title": [
+      {
+        "type": "text",
+        "text": {
+          "content": "Me",
+          "link": null
+        },
+        "annotations": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        },
+        "plain_text": "Me",
+        "href": null
+      }
+    ]
+  }
+}

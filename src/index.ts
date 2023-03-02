@@ -4,8 +4,15 @@ import 'dotenv/config'
 //#endregion
 
 //#region internalImports
-import { getRelevantTweetsAndSend } from './utils/utils'
+import { getRelevantMessagesAndSend } from './utils/utils'
+import initializeWhatsApp from './utils/whatsapp'
 //#endregion
 //#endregion
 
-getRelevantTweetsAndSend()
+async function main() {
+  //   await initializeWhatsApp()
+
+  getRelevantMessagesAndSend()
+}
+
+main()

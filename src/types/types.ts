@@ -1,10 +1,15 @@
-export type Tweet = {
+export type Message = {
   notionId: string
   delivered: boolean
   postDate: string
   message: string
-  hashtags: string[]
-  fullMessage: string
+  contacts: Contact[]
+}
+
+export type Contact = {
+  contactName: string
+  chatId: string
+  isGroup: boolean
 }
 
 export type internalServiceError = {
