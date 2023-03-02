@@ -1,50 +1,59 @@
 //#region imports
 //#region internalImports
-import { getUnsentScheduledTweets, setTweetDelivered } from './notion'
-import { Tweet, internalServiceError } from '../types/types'
-import { sendTweet } from './twitter'
+import { getUnsentScheduledMessages, setMessageDelivered } from './notion'
+import { Message, internalServiceError } from '../types/types'
+import { sendMesssage } from './whatsapp'
 //#endregion
 //#endregion
 
-export async function getRelevantTweetsAndSend() {
-  let tweetsToSend: Tweet[]
+export async function getRelevantMessagesAndSend() {
+  console.log('Attempting to get relevant messages and send to WhatsApp')
+
+  let messagesToSend: Message[]
 
   try {
-    tweetsToSend = await getUnsentScheduledTweets()
+    messagesToSend = await getUnsentScheduledMessages()
   } catch (err) {
-    console.error('Error while getting relevant tweets')
+    console.error('Error while getting relevant messages')
     console.error(err)
 
     return
   }
 
-  console.log(`Found ${tweetsToSend.length} new tweets to send`)
+  console.log(`Found ${messagesToSend.length} new messages to send`)
 
-  const results = await Promise.allSettled(
-    tweetsToSend.map((tweet) => updateNotionTweetAndSend(tweet))
-  )
+  const errors = (
+    await Promise.allSettled(
+      messagesToSend.map((message) => updateNotionMessageAndSend(message))
+    )
+  ).filter((task) => task.status == 'rejected')
 
-  console.log(results)
+  console.log(errors)
 }
 
-async function updateNotionTweetAndSend(tweetToSend: Tweet): Promise<void> {
-  const { notionId } = tweetToSend
+async function updateNotionMessageAndSend(
+  messageToSend: Message
+): Promise<void> {
+  const { notionId } = messageToSend
 
-  await updateNotionTweetDelivered(notionId, true)
+  console.log('Attempting to update & send')
+  console.log(messageToSend)
 
-  await attemptToSendTweet(tweetToSend)
+  await updateNotionMessageDelivered(notionId, true)
+
+  await attemptToSendMessage(messageToSend)
 }
 
-async function updateNotionTweetDelivered(
+async function updateNotionMessageDelivered(
   notionId: string,
   delivered: boolean
 ) {
   try {
-    await setTweetDelivered(notionId, delivered)
+    await setMessageDelivered(notionId, delivered)
   } catch (err) {
     const rejectionObject: internalServiceError = {
       notionId,
-      message: `Error while updating notion tweet ${notionId}`,
+      message: `Error while updating notion message ${notionId}`,
       err,
     }
 
@@ -52,17 +61,19 @@ async function updateNotionTweetDelivered(
   }
 }
 
-async function attemptToSendTweet(tweetToSend: Tweet) {
+async function attemptToSendMessage(messageToSend: Message) {
   try {
-    await sendTweet(tweetToSend)
+    await sendMesssage(messageToSend)
+
+    console.log(`Successfully sent message ${messageToSend.notionId}`)
   } catch (err) {
     try {
-      await updateNotionTweetDelivered(tweetToSend.notionId, false)
+      await updateNotionMessageDelivered(messageToSend.notionId, false)
     } catch (err) {}
 
     const rejectionObject: internalServiceError = {
-      notionId: tweetToSend.notionId,
-      message: `Error while sending tweet ${tweetToSend.notionId}`,
+      notionId: messageToSend.notionId,
+      message: `Error while sending message ${messageToSend.notionId}`,
       err,
     }
 

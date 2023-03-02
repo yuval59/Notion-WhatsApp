@@ -1,11 +1,20 @@
 //#region imports
 //#region externalImports
 import 'dotenv/config'
+import cron from 'node-cron'
 //#endregion
 
 //#region internalImports
-import { getRelevantTweetsAndSend } from './utils/utils'
+import { getRelevantMessagesAndSend } from './utils/utils'
+import initializeWhatsApp from './utils/whatsapp'
+import constants from './constants'
 //#endregion
 //#endregion
 
-getRelevantTweetsAndSend()
+async function main() {
+  await initializeWhatsApp()
+
+  cron.schedule(constants.SCHEDULES.MAIN_FUNCTION, getRelevantMessagesAndSend)
+}
+
+main()

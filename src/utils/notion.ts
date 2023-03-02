@@ -5,14 +5,16 @@ import day from 'dayjs'
 //#endregion
 
 //#region internalImports
-import { internalServiceError, Tweet } from '../types/types'
+import { internalServiceError, Message } from '../types/types'
 import {
   NotionPageObjectResponse,
   NotionQueryDatabaseParameters,
   NotionQueryFilter,
-  NotionTweet,
+  NotionMessage,
+  NotionContact,
+  NotionQueryPageParameters,
 } from '../types/notion-types'
-import { mapNotionTweets } from './notion-type-translator'
+import { mapNotionMessages } from './notion-type-translator'
 //#endregion
 //#endregion
 
@@ -20,30 +22,42 @@ const client = new Client({
   auth: process.env.NOTION_KEY,
 })
 
-export async function getTweetsWithFilter(
+async function performNotionDatabaseQuery(
+  notionQuery: NotionQueryDatabaseParameters
+): Promise<NotionPageObjectResponse[]> {
+  const { results } = await client.databases.query(notionQuery)
+
+  return results.filter(isFullPage) as NotionPageObjectResponse[]
+}
+
+async function performNotionPageQuery(notionQuery: NotionQueryPageParameters) {
+  return (await client.pages.retrieve(notionQuery)) as any as NotionContact
+}
+
+async function getMessagesWithFilter(
   filter: NotionQueryFilter
-): Promise<NotionTweet[]> {
+): Promise<NotionMessage[]> {
   const notionQuery: NotionQueryDatabaseParameters = {
     database_id: `${process.env.NOTION_DB}`,
   }
 
   if (filter) notionQuery.filter = filter
 
-  return (await client.databases.query(notionQuery)).results.filter((result) =>
-    isFullPage(result)
-  ) as NotionPageObjectResponse[] as any as NotionTweet[]
+  return (await performNotionDatabaseQuery(
+    notionQuery
+  )) as any as NotionMessage[]
   // Step by step
   // Query the database, get everything
   // Filter with provided typeguard to leave only full pages (NotionPageObjectResponse)
-  // Cast to internal NotionTweet type, have to go through any or unknown first
+  // Cast to internal NotionMessage type, have to go through any or unknown first
 }
 
-export async function getUnsentScheduledTweets(): Promise<Tweet[]> {
-  const notionTweetFilter: NotionQueryFilter = {
+export async function getUnsentScheduledMessages(): Promise<Message[]> {
+  const notionMessageFilter: NotionQueryFilter = {
     and: [
       {
         property: 'Delivered',
-        checkbox: { does_not_equal: true }, // Not true seemed more fitting here - I want a tweet that _wasn't sent_
+        checkbox: { does_not_equal: true }, // Not true seemed more fitting here - I want a message that wasn't "sent" and a mesage that is "not sent"
       },
       {
         property: 'Post Date',
@@ -54,10 +68,19 @@ export async function getUnsentScheduledTweets(): Promise<Tweet[]> {
     ],
   }
 
-  return mapNotionTweets(await getTweetsWithFilter(notionTweetFilter))
+  const messagesWithContacts = await Promise.all(
+    (
+      await getMessagesWithFilter(notionMessageFilter)
+    ).map(mapNotionMessageContacts)
+  )
+
+  return mapNotionMessages(messagesWithContacts)
 }
 
-export async function setTweetDelivered(notionId: string, Delivered: boolean) {
+export async function setMessageDelivered(
+  notionId: string,
+  Delivered: boolean
+) {
   try {
     await client.pages.update({
       page_id: notionId,
@@ -69,9 +92,37 @@ export async function setTweetDelivered(notionId: string, Delivered: boolean) {
     const errorObject: internalServiceError = {
       notionId,
       err,
-      message: `Failed to set delivered status of tweet ${notionId}`,
+      message: `Failed to set delivered status of message ${notionId}`,
     }
 
     throw errorObject
+  }
+}
+
+async function getContact(contactId: string): Promise<NotionContact> {
+  const notionQuery: NotionQueryPageParameters = {
+    page_id: contactId,
+  }
+
+  return await performNotionPageQuery(notionQuery)
+}
+
+async function getRelevantContacts(
+  contactIds: string[]
+): Promise<NotionContact[]> {
+  return await Promise.all(contactIds.map(getContact))
+}
+
+async function mapNotionMessageContacts(
+  notionMessage: NotionMessage
+): Promise<NotionMessage> {
+  return {
+    id: notionMessage.id,
+    properties: {
+      ...notionMessage.properties,
+      resolvedContacts: await getRelevantContacts(
+        notionMessage.properties.Contacts.relation.map((idObj) => idObj.id)
+      ),
+    },
   }
 }
