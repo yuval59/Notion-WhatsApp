@@ -43,13 +43,9 @@ export function mapNotionMessages(messages: NotionMessage[]): Message[] {
 }
 
 function mapNotionContact(contact: NotionContact): Contact {
-  const { properties } = contact
-
-  fs.writeFileSync('./notion.json', JSON.stringify(properties, null, 2))
-
   return {
-    contactName: properties.contactName.title[0].plain_text,
-    chatId: properties.chatId.rich_text[0].plain_text,
-    isGroup: properties.isGroup.checkbox,
+    contactName: contact.properties.contactName.title[0].plain_text,
+    chatId: contact.properties.chatId.rich_text[0].plain_text,
+    isGroup: contact.properties.isGroup.checkbox,
   }
 }
