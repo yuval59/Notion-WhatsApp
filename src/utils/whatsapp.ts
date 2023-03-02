@@ -1,9 +1,9 @@
 import qrcode from 'qrcode-terminal'
-import { Client, NoAuth } from 'whatsapp-web.js'
+import { Client, LocalAuth } from 'whatsapp-web.js'
 import { Contact, Message } from '../types/types'
 
 const client = new Client({
-  authStrategy: new NoAuth(),
+  authStrategy: new LocalAuth(),
   puppeteer: {
     args: ['--no-sandbox'],
   },
