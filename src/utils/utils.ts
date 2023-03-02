@@ -20,11 +20,13 @@ export async function getRelevantMessagesAndSend() {
 
   console.log(`Found ${messagesToSend.length} new messages to send`)
 
-  const results = await Promise.allSettled(
-    messagesToSend.map((message) => updateNotionMessageAndSend(message))
-  )
+  const errors = (
+    await Promise.allSettled(
+      messagesToSend.map((message) => updateNotionMessageAndSend(message))
+    )
+  ).filter((task) => task.status == 'rejected')
 
-  console.log(results)
+  console.log(errors)
 }
 
 async function updateNotionMessageAndSend(
@@ -60,6 +62,8 @@ async function updateNotionMessageDelivered(
 async function attemptToSendMessage(messageToSend: Message) {
   try {
     await sendMesssage(messageToSend)
+
+    console.log(`Successfully sent message ${messageToSend.notionId}`)
   } catch (err) {
     try {
       await updateNotionMessageDelivered(messageToSend.notionId, false)
