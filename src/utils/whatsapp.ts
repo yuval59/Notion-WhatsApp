@@ -13,8 +13,18 @@ client.on('qr', (qr: string) => {
   qrcode.generate(qr, { small: true })
 })
 
-client.on('ready', () => {
-  console.log('Client is ready!')
+client.on(
+  'ready',
+  async () =>
+    (await client.getChats())
+      .filter((chat) => chat.isGroup)
+      .forEach((chat) => console.log(`${chat.name} => ${chat.id._serialized}`))
+  // Printing to console a list of all groups the user is currently in
+)
+
+client.on('group_join', async (message) => {
+  const chat = await message.getChat()
+  console.log(`${chat.name} => ${message.id}`)
 })
 
 export default function () {
