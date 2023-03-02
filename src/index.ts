@@ -10,7 +10,7 @@ import initializeWhatsApp from './utils/whatsapp'
 //#endregion
 
 async function main() {
-  //   await initializeWhatsApp()
+  await initializeWhatsApp()
 
   getRelevantMessagesAndSend()
 }
