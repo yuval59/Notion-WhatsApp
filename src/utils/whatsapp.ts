@@ -1,6 +1,6 @@
 import qrcode from 'qrcode-terminal'
 import { Client, LocalAuth } from 'whatsapp-web.js'
-import { Contact, Message } from '../types/types'
+import { Message } from '../types/types'
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -33,7 +33,7 @@ export default function () {
 
 export async function sendMesssage(messageToSend: Message) {
   return await Promise.all(
-    messageToSend.contacts.map((contact: Contact) =>
+    messageToSend.contacts.map((contact) =>
       client.sendMessage(contact.chatId, messageToSend.message)
     )
   )
