@@ -7,6 +7,8 @@ import { sendMesssage } from './whatsapp'
 //#endregion
 
 export async function getRelevantMessagesAndSend() {
+  console.log('Attempting to get relevant messages and send to WhatsApp')
+
   let messagesToSend: Message[]
 
   try {
