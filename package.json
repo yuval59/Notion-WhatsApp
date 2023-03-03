@@ -1,26 +1,27 @@
 {
-  "name": "twitter-poc",
+  "name": "notion-whatsapp",
   "version": "1.0.0",
   "description": "Proof of conecpt, learning Notion API and Serverless technologies ",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx ts-node src/index",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yuval59/twitter-poc.git"
+    "url": "git+https://github.com/yuval59/notion-whatsapp.git"
   },
   "keywords": [
     "Notion",
     "Typescript",
-    "Twitter"
+    "WhatsApp"
   ],
   "author": "Yuval Maron",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/yuval59/twitter-poc/issues"
+    "url": "https://github.com/yuval59/notion-whatsapp/issues"
   },
-  "homepage": "https://github.com/yuval59/twitter-poc#readme",
+  "homepage": "https://github.com/yuval59/notion-whatsapp#readme",
   "dependencies": {
     "@notionhq/client": "^2.2.3",
     "dayjs": "^1.11.7",
