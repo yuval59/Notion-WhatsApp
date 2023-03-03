@@ -12,6 +12,11 @@ export type Contact = {
   isGroup: boolean
 }
 
+export type WhatsAppGroup = {
+  name: string
+  chatId: string
+}
+
 export type internalServiceError = {
   notionId: string
   message: string
