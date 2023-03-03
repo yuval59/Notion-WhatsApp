@@ -21,23 +21,29 @@ export function mapNotionMessages(messages: NotionMessage[]): Message[] {
     //#endregion
 
     const { id: notionId, properties } = notionMessage
+    try {
+      const delivered = properties.Delivered.checkbox
+      const postDate = properties['Post Date'].date.start
+      const message = properties.Message.title[0].plain_text
+      const contacts = properties.resolvedContacts.map(mapNotionContact)
 
-    const delivered = properties.Delivered.checkbox
-    const postDate = properties['Post Date'].date.start
-    const message = makeMessageText(properties.Message)
-    const contacts = properties.resolvedContacts.map(mapNotionContact)
+      return {
+        notionId,
+        delivered,
+        postDate,
+        message,
+        contacts,
+      }
+    } catch (err) {
+      console.error(`Notion message ${notionId} is erroring out`)
+      console.error(err)
 
-    return {
-      notionId,
-      delivered,
-      postDate,
-      message,
-      contacts,
+      return
     }
   }
   //#endregion
 
-  return messages.map(makeMessageObject)
+  return messages.map(makeMessageObject).filter((obj) => obj)
 }
 
 function mapNotionContact(contact: NotionContact): Contact {
