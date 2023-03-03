@@ -9,8 +9,6 @@ import { Contact, Message } from '../types/types'
 //#endregion
 //#endregion
 
-import fs from 'fs'
-
 export function mapNotionMessages(messages: NotionMessage[]): Message[] {
   //#region internalFunctions - layer 1
   function makeMessageObject(notionMessage: NotionMessage): Message {
